@@ -2,6 +2,7 @@
 #include "database/Database.h"
 #include "models/PerishableItem.h"
 #include "models/WarrantyItem.h"
+#include "models/Product.h"
 
 int main() {
     std::string dbPath = "data/inventory.db";
@@ -22,6 +23,10 @@ int main() {
     // Warrantied item (laptop) create and print object attributes
     WarrantyItem laptop(2, "LAPTOP-DELL-XPS13", "Dell XPS 13", "Electronics", 10, 1299.99, "Dell", "SN-987654", "Manufacturer", "Dell", 0.0, 24, "Months");
     std::cout << "Laptop Warranty: " << laptop.getWarrantyDuration() << " " << laptop.getWarrantyDurationPeriod() << std::endl;
-    
+
+    // Product item (p1) create and print object attributes
+    Product p1(0, "Organix Milk", "Grocery", "Dairy");
+    p1.display();
+
     return 0;
 }
