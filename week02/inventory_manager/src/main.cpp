@@ -1,9 +1,10 @@
-#include <iostream>
 #include "database/Database.h"
 #include "models/PerishableItem.h"
 #include "models/WarrantyItem.h"
 #include "models/Product.h"
 #include "models/SKUInventory.h"
+
+#include <iostream>
 
 int main() {
     std::string dbPath = "data/inventory.db";
