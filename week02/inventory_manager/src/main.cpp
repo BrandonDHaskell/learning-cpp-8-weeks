@@ -3,6 +3,7 @@
 #include "models/PerishableItem.h"
 #include "models/WarrantyItem.h"
 #include "models/Product.h"
+#include "models/SKUInventory.h"
 
 int main() {
     std::string dbPath = "data/inventory.db";
@@ -27,6 +28,10 @@ int main() {
     // Product item (p1) create and print object attributes
     Product p1(0, "Organix Milk", "Grocery", "Dairy");
     p1.display();
+
+    // SKUInventory Item (sku) create and print object attributes
+    SKUInventory sku("MILK-ORG-1GAL", 1, 5.99, "DairyCo");
+    sku.display();
 
     return 0;
 }
