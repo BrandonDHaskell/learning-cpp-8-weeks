@@ -1,9 +1,33 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(Inventory_Manager)
+project(InventoryManager)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(SQLite3 REQUIRED)
+
 set(CMAKE_GENERATOR "Ninja")
 
-add_subdirectory(main)
+# Header files
+include_directories(
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include/inventory
+    ${PROJECT_SOURCE_DIR}/include/interfaces
+    ${PROJECT_SOURCE_DIR}/include/database
+    ${PROJECT_SOURCE_DIR}/include/managers
+)
+
+# Source files
+file(GLOB_RECURSE SOURCES
+    src/inventory/*.cpp
+    src/interfaces/*.cpp
+    src/database/*.cpp
+    src/managers/*.cpp
+    src/main.cpp
+    )
+
+add_executable(inventory_manager ${SOURCES})
+
+# Link SQLite3
+target_link_libraries(inventory_manager ${SQLite3_LIBRARIES})
