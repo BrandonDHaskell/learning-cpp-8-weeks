@@ -12,3 +12,6 @@ CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+
+# Ignore executuable for testing
+inventory_manager

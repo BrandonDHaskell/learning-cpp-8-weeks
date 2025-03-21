@@ -12,18 +12,18 @@ set(CMAKE_GENERATOR "Ninja")
 # Header files
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/include/inventory
-    ${PROJECT_SOURCE_DIR}/include/interfaces
     ${PROJECT_SOURCE_DIR}/include/database
+    ${PROJECT_SOURCE_DIR}/include/interfaces
     ${PROJECT_SOURCE_DIR}/include/managers
+    ${PROJECT_SOURCE_DIR}/include/models
 )
 
 # Source files
 file(GLOB_RECURSE SOURCES
-    src/inventory/*.cpp
-    src/interfaces/*.cpp
     src/database/*.cpp
+    src/interfaces/*.cpp
     src/managers/*.cpp
+    src/models/*.cpp
     src/main.cpp
     )
 
