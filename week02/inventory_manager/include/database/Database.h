@@ -1,6 +1,7 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
+#include "models/Department.h"
 #include "models/Product.h"
 #include "models/SKUInventory.h"
 #include "models/InventoryItem.h"
@@ -24,6 +25,7 @@ public:
     void initializeDatabase();
 
     // DB Insertions
+    bool insertDepartment(const std::string& name);
     bool insertProduct(const std::string& name, const std::string& category, const std::string& subCategory);
     bool insertSKUInventory(const std::string& sku, int productID, double price, const std::string& supplier);
     bool insertInventoryItem(const std::string& sku, int quantity, const std::string& unitOfMeasure, int conversionFactor);
@@ -32,6 +34,7 @@ public:
 
     // DB Queries
     // Queries
+    std::vector<Department> fetchAllDepartments();
     std::vector<Product> fetchAllProducts();
     std::vector<SKUInventory> fetchAllSKUs();
     std::vector<InventoryItem> fetchAllInventoryItems();

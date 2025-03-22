@@ -1,4 +1,5 @@
 #include "database/Database.h"
+
 #include <iostream>
 #include <filesystem>
 
@@ -49,7 +50,7 @@ void Database::initializeDatabase() {
         );
 
         CREATE TABLE IF NOT EXISTS sku_inventory (
-            skuID TEXT PRIMARY KEY,
+            skuID TEXT PRIMARY KEY UNIQUE,
             productID INTEGER NOT NULL,
             price REAL NOT NULL,
             supplier TEXT NOT NULL,
@@ -107,6 +108,18 @@ void Database::initializeDatabase() {
             breakageDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (skuID) REFERENCES sku_inventory(skuID) ON DELETE CASCADE
         );
+
+        CREATE TABLE IF NOT EXISTS departments (
+            departmentID INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE
+        );
+
+        CREATE TABLE IF NOT EXISTS product_departments (
+            productID INTEGER NOT NULL,
+            departmentID INTEGER NOT NULL,
+            FOREIGN KEY (productID) REFERENCES products(productID) ON DELETE CASCADE,
+            FOREIGN KEY (departmentID) REFERENCES departments(departmentID) ON DELETE CASCADE
+        );
     )";
 
     char* errorMessage = nullptr;
@@ -118,6 +131,30 @@ void Database::initializeDatabase() {
     }
 
     close();
+}
+
+bool Database::insertDepartment(const std::string& name) {
+    if (!open()) return false;
+
+    const char*  sql = "INSERT INTO departments (name) VALUES (?);";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cerr <<"Failed to prepare insertDepartment: " << sqlite3_errmsg(db) << "\n";
+        return false;
+    }
+
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
+
+    bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+
+    if (!success) {
+        std::cerr << "insertDepartment failed: " << sqlite3_errmsg(db) << "\n";
+    }
+
+    sqlite3_finalize(stmt);
+    close();
+    return success;
 }
 
 bool Database::insertProduct(const std::string& name, const std::string& category, const std::string& subCategory) {
@@ -196,6 +233,47 @@ bool Database::insertPerishableItem(const std::string& sku, const std::string& l
     sqlite3_finalize(stmt);
     close();
     return success;
+}
+
+bool Database::insertWarrantyItem(const std::string& sku, const std::string& serialNumber, const std::string& warrantyType, const std::string& provider, double price, int duration, const std::string& durationPeriod) {
+    if (!open()) return false;
+    const char* sql = "INSERT INTO warranty_items (skuID, serialNumber, warrantyType, provider, price, duration, durationPeriod) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) return false;
+    sqlite3_bind_text(stmt, 1, sku.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, serialNumber.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, warrantyType.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, provider.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, 5, price);
+    sqlite3_bind_int(stmt, 6, duration);
+    sqlite3_bind_text(stmt, 7, durationPeriod.c_str(), -1, SQLITE_TRANSIENT);
+
+    bool success = sqlite3_step(stmt) == SQLITE_DONE;
+    sqlite3_finalize(stmt);
+    close();
+    return success;
+}
+
+std::vector<Department> Database::fetchAllDepartments() {
+    std::vector<Department> departments;
+    if (!open()) return departments;
+
+    const char* sql = "SELECT departmentID, name FROM departments";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            int id = sqlite3_column_int(stmt, 0);
+            std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        }
+    } else {
+        std::cerr << "Failed to fetch departments: " << sqlite3_errmsg(db) << "\n";
+    }
+
+    sqlite3_finalize(stmt);
+    close();
+    return departments;
 }
 
 std::vector<Product> Database::fetchAllProducts() {
