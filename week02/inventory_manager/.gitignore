@@ -1,0 +1,17 @@
+# Ignore compiled binaries
+build/
+*.0
+*.out
+*.exe
+
+# Ignore SQLite database
+/data/inventory.db
+
+# Ignore CMake cache files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ignore executuable for testing
+inventory_manager
